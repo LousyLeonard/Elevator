@@ -1,0 +1,1 @@
+﻿public enum UpdateOptions { MoveUp, MoveDown, PersonExpired };
