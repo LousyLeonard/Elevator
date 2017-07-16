@@ -24,12 +24,6 @@ namespace WindowsFormsApp1
             creationTime = DateTime.UtcNow.Ticks;
         }
 
-        ~Person()
-        {
-            // Consider using a person pool
-            notify(UpdateOptions.PersonExpired, this);
-        }
-
         public BsonDocument getRecord()
         {
             var document = new BsonDocument
@@ -56,19 +50,6 @@ namespace WindowsFormsApp1
         public long getCreationTime()
         {
             return creationTime;
-        }
-
-        public static void subscribe(ISubscriber subscriber)
-        {
-            subscribers.Add(subscriber);
-        }
-
-        public void notify(UpdateOptions option, Object obj)
-        {
-            foreach (ISubscriber subscriber in subscribers)
-            {
-                subscriber.update(option, obj);
-            }
         }
     }
 }

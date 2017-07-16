@@ -59,7 +59,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Code\ExpiryRecorder.cs" />
+    <Compile Include="Code\ElevatorPublisher.cs" />
+    <Compile Include="Code\IRecord.cs" />
+    <Compile Include="Code\IRequestable.cs" />
+    <Compile Include="Code\MongoRecord.cs" />
+    <Compile Include="Code\DatabaseWriter.cs" />
     <Compile Include="Code\FloorGUI.cs">
       <SubType>Component</SubType>
     </Compile>

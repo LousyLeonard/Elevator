@@ -33,7 +33,7 @@ namespace WindowsFormsApp1
 
         public static DatabaseWriter getInstance()
         {
-            if (instance != null)
+            if (instance == null)
             {
                 instance = new DatabaseWriter();
             }
@@ -55,7 +55,14 @@ namespace WindowsFormsApp1
 
         public void receiveNotification(UpdateOptions updateType, object obj)
         {
-            addRecord((MongoRecord)(obj));
+            switch (updateType)
+            {
+                case UpdateOptions.GetOff:
+                case UpdateOptions.GetOn:
+                case UpdateOptions.RequestStart:
+                    addRecord((MongoRecord)(obj));
+                    break;
+            }
         }
 
         private void addRecord(MongoRecord record)

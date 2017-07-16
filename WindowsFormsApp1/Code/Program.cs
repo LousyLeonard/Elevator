@@ -24,12 +24,12 @@ namespace WindowsFormsApp1
 
             Elevator elevator = new Elevator(floors, new QueueAlgorithm(), "shaft1");
 
-            // Start the GUI thread
+            /** Start the GUI thread
             Thread applicationThread = new Thread(Program.runApplication);
             applicationThread.Start(elevator);
 
             //Loading time
-            System.Threading.Thread.Sleep(1500);
+            System.Threading.Thread.Sleep(1500);**/
 
             // Start the request generator
             RequestGenerator reqGen = new RequestGenerator(elevator, elevator.getMinFloor(), elevator.getMaxFloor());

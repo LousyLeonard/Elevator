@@ -10,7 +10,7 @@ using System.Windows.Forms;
 
 namespace WindowsFormsApp1
 {
-    public partial class ElevatorGUI : UserControl, ISubscriber
+    partial class ElevatorGUI : UserControl, ISubscriber
     {
         public static int FLOOR_SEPERATION = 40;
         public static int FLOOR_HEIGHT = 35;
@@ -107,6 +107,11 @@ namespace WindowsFormsApp1
             {
                 moveDown();
             }
+        }
+
+        public void receiveNotification(UpdateOptions updateType, object obj)
+        {
+            throw new NotImplementedException();
         }
     }
 }
