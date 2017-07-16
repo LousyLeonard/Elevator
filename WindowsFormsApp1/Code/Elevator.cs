@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace WindowsFormsApp1
 {
-    public class Elevator : IPublisher
+    class Elevator : ElevatorPublisher, IRequestable
     {
         private int currentFloor;
         private int capacity;
@@ -34,14 +34,26 @@ namespace WindowsFormsApp1
 
             this.algorithm = algorithm;
             this.algorithm.setFloors(floors);
+            this.collectionName = algorithm.getName();
+        }
+
+        private void peopleOn(List<Person> people)
+        {
+            this.algorithm.addEntries(people);
+            this.sendNotification(UpdateOptions.GetOn, people);
+        }
+
+        private void peopleOff(List<Person> people)
+        {
+            this.sendNotification(UpdateOptions.GetOn, people);
         }
 
         public void Run()
         {
             for (; ; System.Threading.Thread.Sleep(1500))
             {
-                algorithm.addEntries(floors[currentFloor].getPeopleWaiting());
-                algorithm.atFloor(currentFloor);
+                this.peopleOn(floors[currentFloor].getPeopleWaiting());
+                this.peopleOff(algorithm.arrivedAtFloor(currentFloor));
 
                 int getNextFloor = algorithm.getNextFloor();
                 if (getNextFloor == -1)
@@ -51,13 +63,11 @@ namespace WindowsFormsApp1
 
                 if (getNextFloor < currentFloor)
                 {
-                    moveDown();
-                    Console.WriteLine("down command issued");
+                    goDownAFloor();
                 }
                 else if (getNextFloor > currentFloor)
                 {
-                    moveUp();
-                    Console.WriteLine("up command issued");
+                    goUpAFloor();
                 }
             }
         }
@@ -65,18 +75,21 @@ namespace WindowsFormsApp1
         public void requestElevator(Person person)
         {
             floors[person.getCurrentFloor()].addToFloor(person);
+            this.sendNotification(UpdateOptions.RequestStart, person);
         }
 
-        private void moveUp()
+        private void goUpAFloor()
         {
-            notify(UpdateOptions.MoveUp);
+            this.sendNotification(UpdateOptions.MoveUp);
             currentFloor++;
+            Console.WriteLine("up command issued");
         }
 
-        private void moveDown()
+        private void goDownAFloor()
         {
-            notify(UpdateOptions.MoveDown);
+            this.sendNotification(UpdateOptions.MoveDown);
             currentFloor--;
+            Console.WriteLine("down command issued");
         }
 
         public int getMinFloor()
@@ -95,19 +108,6 @@ namespace WindowsFormsApp1
         public List<Floor> getFloors()
         {
             return floors.Values.ToList();
-        }
-
-        public void subscribe(ISubscriber subscriber)
-        {
-            subscribers.Add(subscriber);
-        }
-
-        private void notify(UpdateOptions option)
-        {
-            foreach (ISubscriber subscriber in subscribers)
-            {
-                subscriber.update(option, null);
-            }
         }
 
         public String getName()

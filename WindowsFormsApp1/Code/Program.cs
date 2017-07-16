@@ -17,24 +17,33 @@ namespace WindowsFormsApp1
         {
             List<Floor> floors = new List<Floor>();
             floors.Add(new Floor(1));
-//            floors.Add(new Floor(2));
-//            floors.Add(new Floor(3));
-//            floors.Add(new Floor(4));
-//            floors.Add(new Floor(5));
+            floors.Add(new Floor(2));
+            floors.Add(new Floor(3));
+            floors.Add(new Floor(4));
+            floors.Add(new Floor(5));
 
             Elevator elevator = new Elevator(floors, new QueueAlgorithm(), "shaft1");
 
+            // Start the GUI thread
             Thread applicationThread = new Thread(Program.runApplication);
             applicationThread.Start(elevator);
 
             //Loading time
             System.Threading.Thread.Sleep(1500);
 
-//            Thread requestThread = new Thread(Program.startRequestGenerator);
-//            requestThread.Start(elevator);
+            // Start the request generator
+            RequestGenerator reqGen = new RequestGenerator(elevator, elevator.getMinFloor(), elevator.getMaxFloor());
+            Thread requestThread = new Thread(reqGen.Run);
+            requestThread.Start();
 
-//            Thread elevatorThread = new Thread(elevator.Run);
-//            elevatorThread.Start();     
+            // Start the database writer
+            DatabaseWriter databaseWriter = DatabaseWriter.getInstance();
+            Thread databaseWriterThread = new Thread(databaseWriter.Run);
+            databaseWriterThread.Start();
+
+            // Start the elevator
+            Thread elevatorThread = new Thread(elevator.Run);
+            elevatorThread.Start();     
         }
 
         private static void runApplication(Object obj)
@@ -42,18 +51,6 @@ namespace WindowsFormsApp1
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new MainWindow((Elevator)obj));
-        }
-
-        private static void startRequestGenerator(Object obj)
-        {
-            Elevator elevator = (Elevator)obj;
-
-            RequestGenerator reqGen = new RequestGenerator(elevator.getMinFloor(), elevator.getMaxFloor());
-
-            for (; ; System.Threading.Thread.Sleep(1500))
-            {
-                elevator.requestElevator(reqGen.getNewRequest());
-            }
         }
     }
 }

@@ -8,15 +8,18 @@ namespace WindowsFormsApp1
 {
     class RequestGenerator
     {
-        private int minFloor;
-        private int maxFloor;
+        private int lowerConstraint;
+        private int upperConstraint;
 
         private Random randomGenerator;
 
-        public RequestGenerator(int minFloor, int maxFloor)
+        private IRequestable requester;
+
+        public RequestGenerator(IRequestable requester, int lowerConstraint, int upperConstraint)
         {
-            this.minFloor = minFloor;
-            this.maxFloor = maxFloor;
+            this.requester = requester;
+            this.lowerConstraint = lowerConstraint;
+            this.upperConstraint = upperConstraint;
 
             this.randomGenerator = new Random();
         }
@@ -35,7 +38,15 @@ namespace WindowsFormsApp1
 
         private int getRandomNumber()
         {
-            return randomGenerator.Next(minFloor, maxFloor + 1);
+            return randomGenerator.Next(lowerConstraint, upperConstraint + 1);
+        }
+
+        public void Run()
+        {
+            for (; ; System.Threading.Thread.Sleep(1500))
+            {
+                requester.requestElevator(this.getNewRequest());
+            }
         }
     }
 }

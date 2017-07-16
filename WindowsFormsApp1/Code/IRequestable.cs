@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace WindowsFormsApp1
 {
-    public interface ISubscriber
+    interface IRequestable
     {
-        void receiveNotification(UpdateOptions updateType, Object obj);
+        void requestElevator(Person person);
     }
 }

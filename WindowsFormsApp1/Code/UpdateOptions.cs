@@ -1,1 +1,1 @@
-﻿public enum UpdateOptions { MoveUp, MoveDown, PersonExpired };
+﻿public enum UpdateOptions { MoveUp, MoveDown, GetOn, GetOff, RequestStart };

@@ -8,20 +8,22 @@ namespace WindowsFormsApp1
 {
     class QueueAlgorithm : IElevatorAlgorithm
     {
-        private List<int> floorsToVisit;
+        private static String ALGORITHM_NAME = "Queue Algorithm";
+
+        private List<Person> people;
         private List<Floor> floors;
 
-        public QueueAlgorithm()
+        public QueueAlgorithm() : base()
         {
-            floorsToVisit = new List<int>();
+            people = new List<Person>();
             floors = new List<Floor>();
         }
 
         public int getNextFloor()
         {
-            if (floorsToVisit.Any())
+            if (people.Any())
             {
-                return floorsToVisit.First();
+                return people.First().getDesiredFloor();
             }
             else
             {
@@ -53,32 +55,36 @@ namespace WindowsFormsApp1
         {
             foreach (Person person in entries)
             {
-                floorsToVisit.Add(person.getDesiredFloor());
+                people.Add(person);
             }
         }
 
-        public void atFloor(int atFloor)
+        public List<Person> arrivedAtFloor(int atFloor)
         {
-            List<int> newFloorsToVisit = new List<int>();
+            List<Person> peopleLeft = people;
+            List<Person> peopleOff = new List<Person>();
 
-            foreach (int floor in floorsToVisit)
+            foreach (Person person in people)
             {
-                if (floor != atFloor)
+                if (person.getDesiredFloor() == atFloor)
                 {
-                    newFloorsToVisit.Add(floor);
-                }
-                else
-                {
-                    Console.WriteLine("One got off at floor : " + atFloor);
+                    peopleLeft.Remove(person);
+                    peopleOff.Add(person);
                 }
             }
 
-            floorsToVisit = newFloorsToVisit;
+            people = peopleLeft;
+            return peopleLeft;
         }
 
         public void setFloors(List<Floor> floors)
         {
             this.floors = floors;
+        }
+
+        public string getName()
+        {
+            return ALGORITHM_NAME;
         }
     }
 }

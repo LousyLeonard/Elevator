@@ -14,8 +14,10 @@ namespace WindowsFormsApp1
 
         void addEntries(List<Person> entries);
 
-        void atFloor(int atFloor);
+        List<Person> arrivedAtFloor(int atFloor);
 
         void setFloors(List<Floor> floors);
+
+        String getName();
     }
 }
