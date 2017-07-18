@@ -26,7 +26,7 @@ namespace WindowsFormsApp1
 
         protected void sendNotification(UpdateOptions type, IRecord record)
         {
-            MongoRecord mongoRecord = new MongoRecord(collectionName, record.getRecord());
+            MongoRecord mongoRecord = new MongoRecord(collectionName, record);
 
             foreach (ISubscriber subscriber in subscribers)
             {

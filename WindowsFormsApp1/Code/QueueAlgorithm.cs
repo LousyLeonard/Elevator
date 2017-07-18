@@ -6,85 +6,50 @@ using System.Threading.Tasks;
 
 namespace WindowsFormsApp1
 {
-    class QueueAlgorithm : IElevatorAlgorithm
+    /**
+     * Variant on both the stop everywhere and the queue algorithm.
+     * It moves between floors in the order requested but stops at each floor 
+     * on the way.
+     * This variant favours fulfilling the wants of people already in the elevator.
+     */
+    class StopEverywhereEmptyQueueAlgorithm : IElevatorAlgorithm
     {
         private static String ALGORITHM_NAME = "Queue Algorithm";
 
-        private List<Person> people;
-        private List<Floor> floors;
+        private Elevator elevator;
 
-        public QueueAlgorithm() : base()
+        public StopEverywhereEmptyQueueAlgorithm()
         {
-            people = new List<Person>();
-            floors = new List<Floor>();
+            // Do Nothing.
         }
 
         public int getNextFloor()
         {
-            if (people.Any())
+            // Let people off the elevator who are on first.
+            if (this.elevator.getPeopleOnElevator().Any())
             {
-                return people.First().getDesiredFloor();
+                return this.elevator.getPeopleOnElevator().First().getDesiredFloor();
             }
+            // Then try to fulfill any requests to get on.
+            else if (this.elevator.getElevatorRequests().Any())
+            {
+                return this.elevator.getElevatorRequests().First().getDesiredFloor();
+            }
+            // If neither sit still.
             else
             {
-                int floorToVisit = -1;
-                foreach (Floor floor in floors)
-                {
-                    foreach (Person person in floor.checkPeopleWaiting())
-                    {
-                        floorToVisit = person.getCurrentFloor();
-                        break;
-                    }
-
-                    if (floorToVisit != -1)
-                    {
-                        break;
-                    }
-                }
-
-                return floorToVisit;
+                return -1;
             }
-        }
-
-        public void addEntry(Person entry)
-        {
-            addEntries(new List<Person> { entry });
-        }
-
-        public void addEntries(List<Person> entries)
-        {
-            foreach (Person person in entries)
-            {
-                people.Add(person);
-            }
-        }
-
-        public List<Person> arrivedAtFloor(int atFloor)
-        {
-            List<Person> peopleLeft = people;
-            List<Person> peopleOff = new List<Person>();
-
-            foreach (Person person in people)
-            {
-                if (person.getDesiredFloor() == atFloor)
-                {
-                    peopleLeft.Remove(person);
-                    peopleOff.Add(person);
-                }
-            }
-
-            people = peopleLeft;
-            return peopleLeft;
-        }
-
-        public void setFloors(List<Floor> floors)
-        {
-            this.floors = floors;
         }
 
         public string getName()
         {
             return ALGORITHM_NAME;
+        }
+
+        public void setElevator(Elevator elevator)
+        {
+            this.elevator = elevator;
         }
     }
 }

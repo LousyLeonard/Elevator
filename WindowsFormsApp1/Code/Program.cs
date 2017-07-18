@@ -22,13 +22,13 @@ namespace WindowsFormsApp1
             floors.Add(new Floor(4));
             floors.Add(new Floor(5));
 
-            Elevator elevator = new Elevator(floors, new QueueAlgorithm(), "shaft1");
+            Elevator elevator = new Elevator(floors, new StopEverywhereEmptyQueueAlgorithm(), "shaft1");
 
             /** Start the GUI thread
             Thread applicationThread = new Thread(Program.runApplication);
             applicationThread.Start(elevator);
 
-            //Loading time
+            //Let the GUI load
             System.Threading.Thread.Sleep(1500);**/
 
             // Start the request generator

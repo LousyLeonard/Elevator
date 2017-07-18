@@ -26,12 +26,14 @@ namespace WindowsFormsApp1
 
         public BsonDocument getRecord()
         {
-            var document = new BsonDocument
-            {
-                { "originFloor", this.getCurrentFloor() },
-                { "destinationFloor", this.getDesiredFloor() },
-                { "startTime", this.getCreationTime() },
-                { "endTime", DateTime.UtcNow.Ticks }
+            var document = new BsonDocument {
+                { "Person", new BsonDocument {
+                        { "originFloor", this.getCurrentFloor() },
+                        { "destinationFloor", this.getDesiredFloor() },
+                        { "startTime", this.getCreationTime() },
+                        { "endTime", DateTime.UtcNow.Ticks }
+                    }
+                }
             };
 
             return document;

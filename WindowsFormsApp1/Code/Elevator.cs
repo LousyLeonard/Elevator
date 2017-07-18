@@ -3,24 +3,27 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MongoDB.Bson;
 
 namespace WindowsFormsApp1
 {
-    class Elevator : ElevatorPublisher, IRequestable
+    class Elevator : ElevatorPublisher, IRequestable, IRecord
     {
+        private static readonly int STAY_AT_THIS_FLOOR = -1;
+
         private int currentFloor;
         private int capacity;
         private String name;
 
-        private List<ISubscriber> subscribers;
+        private List<Person> peopleOnElevator;
+        private List<Person> elevatorRequests;
 
         private IElevatorAlgorithm algorithm;
 
         private Dictionary<int, Floor> floors;
 
-        public Elevator(List<Floor> floors, IElevatorAlgorithm algorithm, String name)
+        public Elevator(List<Floor> floors, IElevatorAlgorithm algorithm, String name) : base()
         {
-            this.subscribers = new List<ISubscriber>();
             this.name = name;
 
             this.floors = new Dictionary<int, Floor>();
@@ -32,43 +35,84 @@ namespace WindowsFormsApp1
             this.currentFloor = 1;
             this.capacity = 5;
 
+            this.peopleOnElevator = new List<Person>();
+            this.elevatorRequests = new List<Person>();
+
             this.algorithm = algorithm;
-            this.algorithm.setFloors(floors);
+            this.algorithm.setElevator(this);
             this.collectionName = algorithm.getName();
+        }
+
+        public List<Person> getPeopleOnElevator()
+        {
+            return peopleOnElevator;
+        }
+
+        public List<Person> getElevatorRequests()
+        {
+            return elevatorRequests;
         }
 
         private void peopleOn(List<Person> people)
         {
-            this.algorithm.addEntries(people);
+            foreach (Person person in people)
+            {
+                // Person gets on the elevator.
+                peopleOnElevator.Add(person);
+                // The request is fulfilled.
+                elevatorRequests.Remove(person);
+            }
+
             this.sendNotification(UpdateOptions.GetOn, people);
         }
 
-        private void peopleOff(List<Person> people)
+        private void peopleOff()
         {
-            this.sendNotification(UpdateOptions.GetOn, people);
+            List<Person> peopleLeft = peopleOnElevator;
+            List<Person> peopleOff = new List<Person>();
+
+            foreach (Person person in peopleOnElevator)
+            {
+                if (person.getDesiredFloor() == currentFloor)
+                {
+                    peopleLeft.Remove(person);
+                    peopleOff.Add(person);
+                }
+            }
+
+            peopleOnElevator = peopleLeft;
+
+            this.sendNotification(UpdateOptions.GetOff, peopleOff);
+        }
+
+        private void figureOutwhereToGoNext()
+        {
+            int nextFloor = algorithm.getNextFloor();
+
+            if (nextFloor == STAY_AT_THIS_FLOOR)
+            {
+                // Do nothing
+            }
+            else if (nextFloor < currentFloor)
+            {
+                goDownAFloor();
+            }
+            else if (nextFloor > currentFloor)
+            {
+                goUpAFloor();
+            }
         }
 
         public void Run()
         {
             for (; ; System.Threading.Thread.Sleep(1500))
             {
+                this.sendNotification(UpdateOptions.AtFloor, this);
+
+                this.peopleOff();
                 this.peopleOn(floors[currentFloor].getPeopleWaiting());
-                this.peopleOff(algorithm.arrivedAtFloor(currentFloor));
 
-                int getNextFloor = algorithm.getNextFloor();
-                if (getNextFloor == -1)
-                {
-                    getNextFloor = currentFloor;
-                }
-
-                if (getNextFloor < currentFloor)
-                {
-                    goDownAFloor();
-                }
-                else if (getNextFloor > currentFloor)
-                {
-                    goUpAFloor();
-                }
+                this.figureOutwhereToGoNext();
             }
         }
 
@@ -76,6 +120,7 @@ namespace WindowsFormsApp1
         {
             floors[person.getCurrentFloor()].addToFloor(person);
             this.sendNotification(UpdateOptions.RequestStart, person);
+            this.elevatorRequests.Add(person);
         }
 
         private void goUpAFloor()
@@ -113,6 +158,27 @@ namespace WindowsFormsApp1
         public String getName()
         {
             return this.name;
+        }
+
+        public BsonDocument getRecord()
+        {
+            var people = new BsonArray();
+
+            foreach (Person person in peopleOnElevator)
+            {
+                people.Add(person.getRecord());
+            }
+
+            var document = new BsonDocument {
+                { "ElevatorReport", new BsonDocument {
+                        { "currentFloor", this.currentFloor },
+                        { "currentTime", DateTime.UtcNow.Ticks },
+                        { "peopleOnElevator", people }
+                    }
+                }
+            };
+
+            return document;
         }
     }
 }

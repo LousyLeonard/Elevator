@@ -24,7 +24,7 @@ namespace WindowsFormsApp1
             _server = "mongodb://192.168.1.13:27017";
 
             _client = new MongoClient(_server);
-            _database = _client.GetDatabase("test");
+            _database = _client.GetDatabase("Elevators");
 
             _cache = new Dictionary<String, List<BsonDocument>>();
 
@@ -73,7 +73,7 @@ namespace WindowsFormsApp1
             }
 
             List<BsonDocument> entries = _cache[record.getCollection()];
-            entries.Add(record.getContent());
+            entries.Add(record.getRecord());
         }
 
         public void Run()

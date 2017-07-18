@@ -6,17 +6,11 @@ using System.Threading.Tasks;
 
 namespace WindowsFormsApp1
 {
-    public interface IElevatorAlgorithm
+    interface IElevatorAlgorithm
     {
         int getNextFloor();
 
-        void addEntry(Person entry);
-
-        void addEntries(List<Person> entries);
-
-        List<Person> arrivedAtFloor(int atFloor);
-
-        void setFloors(List<Floor> floors);
+        void setElevator(Elevator elevator);
 
         String getName();
     }

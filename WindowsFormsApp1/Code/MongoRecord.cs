@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 
 namespace WindowsFormsApp1
 {
-    class MongoRecord
+    class MongoRecord : IRecord
     {
         private String collection;
-        private BsonDocument content;
+        private IRecord content;
 
-        public MongoRecord(String collection, BsonDocument content)
+        public MongoRecord(String collection, IRecord content)
         {
             this.collection = collection;
             this.content = content;
@@ -23,9 +23,9 @@ namespace WindowsFormsApp1
             return collection;
         }
 
-        public BsonDocument getContent()
+        public BsonDocument getRecord()
         {
-            return content;
+            return content.getRecord();
         }
     }
 }
