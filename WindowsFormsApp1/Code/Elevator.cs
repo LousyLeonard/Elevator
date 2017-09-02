@@ -87,7 +87,7 @@ namespace WindowsFormsApp1
             Console.WriteLine("{0} People got off.", peopleLeft.Count);
         }
 
-        private void figureOutwhereToGoNext()
+        private void figureOutwhereToGoNextAndGoThere()
         {
             int nextFloor = algorithm.getNextFloor();
 
@@ -107,15 +107,15 @@ namespace WindowsFormsApp1
             {
                 goUpAFloor();
             }
+
+            this.sendNotification(UpdateOptions.AtFloor, this);
         }
 
         public void Run()
         {
             for (; ; System.Threading.Thread.Sleep(1500))
             {
-                this.sendNotification(UpdateOptions.AtFloor, this);
-
-                this.figureOutwhereToGoNext();
+                this.figureOutwhereToGoNextAndGoThere();
             }
         }
 
