@@ -59,6 +59,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Code\DeepCopy.cs" />
     <Compile Include="Code\ElevatorPublisher.cs" />
     <Compile Include="Code\IRecord.cs" />
     <Compile Include="Code\IRequestable.cs" />
