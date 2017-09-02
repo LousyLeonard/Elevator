@@ -16,7 +16,7 @@ namespace WindowsFormsApp1
         private String name;
 
         private List<Person> peopleOnElevator;
-        private List<Person> elevatorRequests;
+        private volatile List<Person> elevatorRequests;
 
         private IElevatorAlgorithm algorithm;
 
@@ -45,30 +45,31 @@ namespace WindowsFormsApp1
 
         public List<Person> getPeopleOnElevator()
         {
-            return peopleOnElevator;
+            return this.peopleOnElevator;
         }
 
         public List<Person> getElevatorRequests()
         {
-            return elevatorRequests;
+            return this.elevatorRequests;
         }
 
-        private void peopleOn(List<Person> people)
+        private void peopleOn(List<Person> peopleOn)
         {
-            foreach (Person person in people)
+            foreach (Person person in peopleOn)
             {
                 // Person gets on the elevator.
-                peopleOnElevator.Add(person);
+                this.peopleOnElevator.Add(person);
                 // The request is fulfilled.
-                elevatorRequests.Remove(person);
+                this.elevatorRequests.Remove(person);
             }
 
-            this.sendNotification(UpdateOptions.GetOn, people);
+            this.sendNotification(UpdateOptions.GetOn, peopleOn);
+            Console.WriteLine("{0} People got on.", peopleOn.Count);
         }
 
         private void peopleOff()
         {
-            List<Person> peopleLeft = peopleOnElevator;
+            List<Person> peopleLeft = new List<Person>(peopleOnElevator);
             List<Person> peopleOff = new List<Person>();
 
             foreach (Person person in peopleOnElevator)
@@ -83,6 +84,7 @@ namespace WindowsFormsApp1
             peopleOnElevator = peopleLeft;
 
             this.sendNotification(UpdateOptions.GetOff, peopleOff);
+            Console.WriteLine("{0} People got off.", peopleLeft.Count);
         }
 
         private void figureOutwhereToGoNext()
@@ -91,7 +93,11 @@ namespace WindowsFormsApp1
 
             if (nextFloor == STAY_AT_THIS_FLOOR)
             {
-                // Do nothing
+                // Do Nothing
+            }
+            else if (nextFloor == currentFloor)
+            {
+                openDoor();
             }
             else if (nextFloor < currentFloor)
             {
@@ -109,32 +115,41 @@ namespace WindowsFormsApp1
             {
                 this.sendNotification(UpdateOptions.AtFloor, this);
 
-                this.peopleOff();
-                this.peopleOn(floors[currentFloor].getPeopleWaiting());
-
                 this.figureOutwhereToGoNext();
             }
         }
 
         public void requestElevator(Person person)
         {
-            floors[person.getCurrentFloor()].addToFloor(person);
             this.sendNotification(UpdateOptions.RequestStart, person);
+
+            this.floors[person.getCurrentFloor()].addToFloor(person);
             this.elevatorRequests.Add(person);
+
+            Console.WriteLine("Elevator requested from {0}", person.getCurrentFloor());
         }
 
         private void goUpAFloor()
         {
             this.sendNotification(UpdateOptions.MoveUp);
             currentFloor++;
-            Console.WriteLine("up command issued");
+            Console.WriteLine("Up command issued. Moved from {0} to {1}", currentFloor - 1, currentFloor);
         }
 
         private void goDownAFloor()
         {
             this.sendNotification(UpdateOptions.MoveDown);
             currentFloor--;
-            Console.WriteLine("down command issued");
+            Console.WriteLine("Down command issued. Moved from {0} to {1}", currentFloor + 1, currentFloor);
+        }
+
+        private void openDoor()
+        {
+            this.sendNotification(UpdateOptions.OpenDoor);
+            Console.WriteLine("Opening doors");
+
+            peopleOff();
+            peopleOn(this.floors[currentFloor].getPeopleWaiting());
         }
 
         public int getMinFloor()

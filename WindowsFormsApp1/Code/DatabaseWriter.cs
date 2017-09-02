@@ -21,7 +21,7 @@ namespace WindowsFormsApp1
 
         private DatabaseWriter()
         {
-            _server = "mongodb://192.168.1.13:27017";
+            _server = "mongodb://192.168.1.11:27017";
 
             _client = new MongoClient(_server);
             _database = _client.GetDatabase("Elevators");

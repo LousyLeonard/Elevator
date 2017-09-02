@@ -1,1 +1,1 @@
-﻿public enum UpdateOptions { MoveUp, MoveDown, GetOn, GetOff, RequestStart, AtFloor };
+﻿public enum UpdateOptions { MoveUp, MoveDown, OpenDoor, GetOn, GetOff, RequestStart, AtFloor };

@@ -30,7 +30,7 @@ namespace WindowsFormsApp1
 
         public List<Person> getPeopleWaiting()
         {
-            List<Person> result = this.peopleWaiting;
+            List<Person> result = new List<Person>(this.peopleWaiting);
             this.peopleWaiting.Clear();
             return result;
         }

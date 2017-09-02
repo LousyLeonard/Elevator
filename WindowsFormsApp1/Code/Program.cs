@@ -1,4 +1,6 @@
-﻿using System;
+﻿using MongoDB.Bson;
+using MongoDB.Driver;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -37,9 +39,9 @@ namespace WindowsFormsApp1
             requestThread.Start();
 
             // Start the database writer
-            DatabaseWriter databaseWriter = DatabaseWriter.getInstance();
-            Thread databaseWriterThread = new Thread(databaseWriter.Run);
-            databaseWriterThread.Start();
+            //DatabaseWriter databaseWriter = DatabaseWriter.getInstance();
+            //Thread databaseWriterThread = new Thread(databaseWriter.Run);
+            //databaseWriterThread.Start();
 
             // Start the elevator
             Thread elevatorThread = new Thread(elevator.Run);
